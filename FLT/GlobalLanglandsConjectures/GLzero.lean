@@ -64,8 +64,7 @@ def ofComplex (c : ℂ) : AutomorphicFormForGLnOverQ 0 ρ := {
       continuous := by continuity
       loc_cst := by
         rw [IsLocallyConstant]
-        sorry
-        -- aesop -- used to work
+        exact fun y s ↦ isOpen_discrete ((fun x ↦ c) ⁻¹' s)
       smooth := by simp [contMDiff_const]
     }
     is_periodic := by simp
@@ -82,7 +81,7 @@ def ofComplex (c : ℂ) : AutomorphicFormForGLnOverQ 0 ρ := {
       }
       apply Exists.intro U
       exact {
-          is_open := by sorry -- used to be simp but there's a timeout
+          is_open := isOpen_discrete U.carrier
           is_compact := by aesop
           finite_level := by simp
       }
@@ -97,8 +96,8 @@ noncomputable def classification : AutomorphicFormForGLnOverQ 0 ρ ≃ ℂ := {
     rw [Function.LeftInverse]
     simp only [ofComplex]
     intro x
-    have h: x.toFun = fun _ => x.toFun 1 := by
-      exact funext fun g ↦ congrArg x.toFun <| Subsingleton.eq_one g
+    have h: x.toFun = fun _ => x.toFun 1 :=
+      funext fun g ↦ congrArg x.toFun <| Subsingleton.eq_one g
     ext m
     rw [h]
   right_inv := by
@@ -120,7 +119,7 @@ def ofComplex (z : ℂ) {n : ℕ} (ρ : Weight n) (hρ : ρ.IsTrivial) :
     AutomorphicFormForGLnOverQ n ρ where
       toFun _ := z
       is_smooth := sorry
-      is_periodic := sorry
+      is_periodic := fun _ _ _ ↦ rfl
       is_slowly_increasing := sorry
       -- is_finite_cod := sorry -- needs a better name
       has_finite_level := sorry -- needs a better name
