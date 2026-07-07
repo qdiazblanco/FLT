@@ -70,9 +70,15 @@ theorem WeierstrassCurve.n_torsion_dimension [IsSepClosed k] {n : ℕ} (hn : (n 
     simp [hn]
   exact ⟨φ.trans (RingEquiv.piFinTwo _).toAddEquiv⟩
 
--- follows easily from the above
-noncomputable instance (n : ℕ) : Module.Finite (ZMod n) (E.nTorsion n) := by
-  sorry
+-- The `NeZero` hypothesis is needed: `nTorsion 0` is the whole group of points and
+-- `ZMod 0 = ℤ`, so finiteness statements about it are false in general.
+instance (n : ℕ) [NeZero n] : Finite (E.nTorsion n) :=
+  E.n_torsion_finite (Nat.pos_of_ne_zero (NeZero.ne n))
+
+-- `Module.Finite (ZMod n) (E.nTorsion n)` now holds by instance search,
+-- via the instance above and `Module.Finite.of_finite`:
+example (n : ℕ) [NeZero n] : Module.Finite (ZMod n) (E.nTorsion n) := inferInstance
+
 
 -- This should be a straightforward but perhaps long unravelling of the definition
 /-- The map on points for an elliptic curve over `k` induced by a morphism of `k`-algebras
@@ -106,10 +112,10 @@ noncomputable instance WeierstrassCurve.galoisRepresentationSmul
 noncomputable instance WeierstrassCurve.galoisRepresentation
     (K : Type u) [Field K] [DecidableEq K] [Algebra k K] :
     DistribMulAction (K ≃ₐ[k] K) (E⁄K).Point where
-      one_smul := sorry -- these should all be easy
-      mul_smul := sorry
-      smul_zero := sorry
-      smul_add := sorry
+      one_smul P := by cases P <;> rfl
+      mul_smul _ _ P := by cases P <;> rfl
+      smul_zero _ := rfl
+      smul_add _ _ _ := map_add (WeierstrassCurve.Affine.Point.map (_ : K →ₐ[k] K)) _ _
 
 -- the next `sorry` is data but the only thing which should be missing is
 -- the continuity argument, which follows from the finiteness asserted above.
