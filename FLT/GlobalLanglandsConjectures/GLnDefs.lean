@@ -207,7 +207,13 @@ def actionTensorCAlg'2 :
   (actionTensorCAlg' G E).comp (SubalgebraClass.val _)
 
 instance : Module ℝ C^∞⟮𝓘(ℝ, E), G; 𝓘(ℝ, ℝ), ℝ⟯ := inferInstance
-instance : Module ℂ C^∞⟮𝓘(ℝ, E), G; 𝓘(ℝ, ℂ), ℂ⟯ := sorry
+
+instance : SMul ℂ C^∞⟮𝓘(ℝ, E), G; 𝓘(ℝ, ℂ), ℂ⟯ where
+  smul z f := ⟨fun x ↦ z * f x, ((z • ContinuousLinearMap.id ℝ ℂ).contMDiff).comp f.contMDiff⟩
+
+instance : Module ℂ C^∞⟮𝓘(ℝ, E), G; 𝓘(ℝ, ℂ), ℂ⟯ :=
+  Function.Injective.module ℂ ContMDiffMap.coeFnAddMonoidHom ContMDiffMap.coe_injective
+    fun _ _ ↦ rfl
 
 /-- The universal enveloping algebra over `ℂ` of the complexified Lie algebra of `G`. -/
 def Alg := UniversalEnvelopingAlgebra ℂ (ℂ ⊗[ℝ] LeftInvariantDerivation 𝓘(ℝ, E) G)
